@@ -543,10 +543,12 @@ def run_final_audit_and_save():
 audit_results = run_final_audit_and_save()
 display(audit_results)
 
-"""Graphs"""
+"""Again
 
+Results and metrics comparison of both baseline and SGRA, visualization using graphs.
+"""
 def run_final_audit():
-    # 1. Define Prompts
+
     prompts = [
         {"cat": "Spatial", "p": "a square on the left and a circle on the right"},
         {"cat": "Shape", "p": "a triangular plate beside and a square napkin next to"},
@@ -555,12 +557,10 @@ def run_final_audit():
 
     results = []
 
-    # 2. Run Inference and Calculate Metrics
     for case in prompts:
-        # Assuming sgra_inference and model/tokenizer are already defined in your session
         raw, refined = sgra_inference(case['p'])
 
-        # Pairwise Accuracy Calculation (Internal Helper)
+        # Pairwise Accuracy Calculation
         def p_acc(e):
             m = e.shape[1]//2
             return 1.0 - torch.abs(F.cosine_similarity(e[:,:m,:].mean(1), e[:,m:,:].mean(1))).item()
@@ -580,16 +580,11 @@ def run_final_audit():
                 "Gain_Pct": ((s/b)-1)*100
             })
 
-    # 3. Create DataFrame
     df = pd.DataFrame(results)
 
-    # 4. Numerical Report
-    print("\n--- Numerical Audit Report ---")
+    # Numerical Report
     display(df.set_index(['Category', 'Metric']))
 
-    # --- 5. VISUALIZATIONS ---
-
-    # Set global style
     sns.set_theme(style="whitegrid")
 
     # Graph 1: Aggregate Performance (Bar Chart)
@@ -631,7 +626,6 @@ def run_final_audit():
     plt.legend()
     plt.show()
 
-    return df # Return for external use
+    return df
 
-# Execute the full audit and save the dataframe to a variable
 audit_results_df = run_final_audit()
